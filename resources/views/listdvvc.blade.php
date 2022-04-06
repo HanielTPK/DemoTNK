@@ -78,8 +78,8 @@
             </div>
 
             <div>
-                <a href="{{ route('themdvvcG') }}"> <button type="submit" class='btn btn-success' style="float:left; padding-top:10px"
-                        id="Refresh">Thêm</button></a>
+                <a href="{{ route('themdvvcG') }}"> <button type="submit" class='btn btn-success'
+                        style="float:left; padding-top:10px" id="Refresh">Thêm</button></a>
             </div>
 
         </div>
@@ -195,6 +195,13 @@
             console.log(fromdate);
             $('#table').DataTable().destroy();
             loaddata(from_date = fromdate, to_date = todate);
+        })
+
+        $('#Refresh').click(function() {
+
+            console.log(fromdate);
+            $('#table').DataTable().destroy();
+            loaddata(from_date = " ", to_date = " ");
         })
 
         var FormDanhMuc =
