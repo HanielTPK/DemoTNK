@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DonViVanChuyenController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,17 +26,21 @@ Route::get('/list', function () {
 Route::get('/', function () {
     return view('welcome');
 });
-    Route::post('add', [DonViVanChuyenController::class, 'themdvvc'])->name('themdvvcp');
+Route::post('add', [DonViVanChuyenController::class, 'adddvvc'])->name('themdvvcP');
 
-    Route::get('add', [DonViVanChuyenController::class, 'themdvvc'])->name('themdvvcg');
+Route::get('add', [DonViVanChuyenController::class, 'addView'])->name('themdvvcG');
 
-    Route::get('list/data', [DonViVanChuyenController::class, 'getalldvvc'])->name('getdata');
+Route::get('list/data', [DonViVanChuyenController::class, 'getalldvvc'])->name('getdata');
 
-    Route::get('users/{id}',);
+Route::get('users/{id}',);
 
-    Route::post('deletedvvc/{id}',[DonViVanChuyenController::class,'deletedvvc'])->name('deletedvvcp');
+Route::post('delete/{id}', [DonViVanChuyenController::class, 'deletedvvc'])->name('deletedvvcP');
 
-    Route::get('deletedvvc/{id}',[DonViVanChuyenController::class,'deletedvvc'])->name('deletedvvcg');
+Route::get('delete', [DonViVanChuyenController::class, 'deletedvvc'])->name('deletedvvcG');
+
+Route::get('update', [DonViVanChuyenController::class, 'updateView'])->name('updatedvvcG');
+
+Route::post('update/{id}', [DonViVanChuyenController::class, 'updatedvvc'])->name('updatedvvcP');
 
 Route::get('/home', 'HomeController@index')->name('home');
 
