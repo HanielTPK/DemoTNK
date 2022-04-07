@@ -32,9 +32,8 @@ Route::get('add', [DonViVanChuyenController::class, 'addView'])->name('themdvvcG
 
 Route::get('list/data', [DonViVanChuyenController::class, 'getalldvvc'])->name('getdata');
 
-Route::get('users/{id}',);
 
-Route::post('delete/{id}', [DonViVanChuyenController::class, 'deletedvvc'])->name('deletedvvcP');
+Route::post('delete', [DonViVanChuyenController::class, 'deletedvvc'])->name('deletedvvcP');
 
 Route::get('delete', [DonViVanChuyenController::class, 'deletedvvc'])->name('deletedvvcG');
 

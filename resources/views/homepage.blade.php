@@ -55,25 +55,25 @@
             <form action="{{ route('themdvvcP') }}" method="POST">
         @endif
         @if ($mode == 1)
-            <form action="{{ route('updatedvvcP',['id'=>$id]) }}" method="POST">
+            <form action="{{ route('updatedvvcP', ['id' => $id]) }}" method="POST">
         @endif
         @csrf
         <div>
             <h3>Thông tin ĐVVC</h3>
             <div class="topthem">
-                <label for="">Tên ĐVVC</label>
+                <label for="">Tên ĐVVC (*)</label>
                 <input value="{{ $tendvvc }}" name="tendvvc" type="text" class="form-control"
                     placeholder="Nhập tên đvvc">
             </div>
             <div class="topthem">
-                <label for="">Tên viêt tắt</label>
+                <label for="">Tên viêt tắt (*)</label>
                 <input value="{{ $tenviettat }}" name="tenviettat" type="text" class="form-control" id=""
                     placeholder="Nhập viết tắt">
             </div>
 
             <div class="topthem">
                 <label for="">Số điện thoại</label>
-                <input value="{{ $sdt }}" name="sdt" type="text" class="form-control" id=""
+                <input value="{{ $sdt }}" name="sdt" type="number" class="form-control" id=""
                     placeholder="Nhập SDT">
             </div>
             {{-- @error('sdt')
@@ -86,7 +86,7 @@
             </div>
 
             <div class="topthem">
-                <label for="topthem">Trạng thái ĐVVC</label>
+                <label for="topthem">Trạng thái ĐVVC (*)</label>
                 <select value="{{ $trangthai }}" name="trangthaidvvc" class="form-control" id="trangthaidvvc">
                     <option value="Còn hợp tác">Còn hợp tác</option>
                     <option value="Ngưng hợp tác">Ngưng hợp tác</option>
@@ -136,7 +136,8 @@
                     placeholder="Nhập ghi chú">{{ $ghichu }}</textarea>
             </div>
         </div>
-        <button type="submit" class="btn btn-success">lưu</button>
+        <a href='javascript:history.back()'><button type="button" class="btn btn-success">Quay lại</button></a>
+        <button type="submit" class="btn btn-success">Lưu</button>
         </form>
     </div>
     <script>

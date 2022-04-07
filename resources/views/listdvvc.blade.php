@@ -23,7 +23,7 @@
 
     <h1 style="text-align: center; color:rgb(89, 206, 226)">DANH SÁCH ĐƠN VỊ VẬN CHUYỂN</h1>
     <div style="background-color: white;height:100%; border-top-color: red ">
-        <div style="height: 40%">
+        <div style="height: 50%">
             <a href="{{ url()->previous() }}"><i class="fa fa-backward" aria-hidden="true"> Quay lại</i></a><br>
             <div style="float: right">
 
@@ -48,42 +48,40 @@
                 </div>
 
             </div>
-
             <div class="date-search">
-                <select name="" class="form-control" style="width: 20%">
-                    <option value="Còn hợp tác">Ngày tạo</option>
-                    <option value="Ngưng hợp tác">Ngày sửa</option>
+                <select name="datatype" id="datatype" class="form-control" style="width: 20%">
+                    <option value="Ngày tạo">Ngày tạo</option>
+                    <option value="Ngày sửa">Ngày sửa</option>
                 </select>
             </div>
-            <div class="" id="searchForm" style="padding-top: 40px;size:20ch">
+            <div class="" id="searchform" style="padding-top: 40px;size:20ch">
                 <label style="float: left; padding-right:20px" for="topthem">Danh mục tìm</label>
                 <div style="width:200px;float: left; padding-right:20px">
-                    <select class="form-control" id="SearchContent">
+                    <select class="form-control" name="SearchContent" id="SearchContent">
                         <option disabled selected value> -- Cột cần tìm -- </option>
                         <option value="TenDVVC">TÊN ĐƠN VỊ VẬN CHYỂN</option>
                         <option value="TenVietTat">TÊN VIẾT TẮT</option>
                         <option value="DiaChi">ĐỊA CHỈ</option>
-                        <option value="SDT">SỐ ĐIỆN THOẠI </option>
+                        <option value="Sdt">SỐ ĐIỆN THOẠI </option>
                         <option value="GhiChu">GHI CHÚ</option>
                     </select>
                 </div>
                 <label for="" style="float:left; padding-right:20px">Nội dung tìm</label>
 
                 <div class="col-md-4" style="width: 200px">
-                    <input class="form-control" type="text" placeholder="-- Nội dung tìm --">
+                    <input id="SearchInput" name="SearchInput" class="form-control" type="text"
+                        placeholder="-- Nội dung tìm --">
                 </div>
                 <div style="">
-                    <a href=""><button class="btn btn-danger">X</button></a>
+                    <button onclick="return $('#searchForm').remove();" id="Delete" class="btn btn-danger">X</button>
                 </div>
             </div>
-
-            <div>
-                <a href="{{ route('themdvvcG') }}"> <button type="submit" class='btn btn-success'
-                        style="float:left; padding-top:10px" id="Refresh">Thêm</button></a>
-            </div>
-
         </div>
-        <div style="height: 100%; margin:10px">
+        <div class="" style="padding-bottom:40px; width:200px;">
+            <a href="{{ route('themdvvcG') }}"> <button type="submit" class='btn btn-success'
+                    style="float:left; padding-top:10px" id="Refresh">+ Thêm mới</button></a>
+        </div>
+        <div style="height: 100%; margin:20px">
             <table class="table" id="table">
                 <thead class="thead-info" style="background-color:cornflowerblue">
                     <tr>
@@ -123,24 +121,37 @@
     <script>
         var count = 0
         loaddata();
-        $(document).ready(function() {
-            $('#SearchContent').selectize({
-                sortField: 'text'
-            });
+        $('#SearchContent').selectize({
+            sortField: 'text'
         });
 
+
         function selectizeA() {
+            $(document).ready(function() {
+                $('#SearchContent').selectize({
+                    sortField: 'text'
+                });
+            });
             $(document).ready(function() {
                 $('#SearchContent0').selectize({
                     sortField: 'text'
                 });
             });
+            $(document).ready(function() {
+                $('#SearchContent1').selectize({
+                    sortField: 'text'
+                });
+            });
+
 
         }
 
-        function loaddata(from_date = ' ', to_date = ' ') {
+        function loaddata(from_date = ' ', to_date = ' ', date_type = ' ', search_select = ' ', search_select0 =
+            ' ',
+            search_select1 = ' ', search_input = ' ', search_input0 = ' ', search_input1 = ' ') {
             $(document).ready(function() {
                 $('#table').DataTable({
+
                     info: false,
                     processing: true,
                     serverSide: true,
@@ -151,12 +162,21 @@
                         url: '{{ route('getdata') }}',
                         data: {
                             fromdate: from_date,
-                            todate: to_date
+                            todate: to_date,
+                            datetype: date_type,
+                            searchselect: search_select,
+                            searchselect0: search_select0,
+                            searchselect1: search_select1,
+                            searchinput: search_input,
+                            searchinput0: search_input0,
+                            searchinput1: search_input1,
                         },
                     },
                     columns: [{
                             data: 'id',
-                            name: 'id'
+                            render: function(data, type, row, meta) {
+                                return meta.row + meta.settings._iDisplayStart + 1;
+                            }
                         },
                         {
                             data: 'TenDVVC',
@@ -173,14 +193,16 @@
                         {
                             data: 'NgayNgungHopTac',
                             name: 'ngayngunghoptac'
-                        }, {
+                        },
+                        {
                             data: 'DiaChi',
                             name: 'diachi'
                         },
                         {
                             data: 'TrangThaiDVVC',
                             name: 'trangthaidvvc'
-                        }, {
+                        },
+                        {
                             data: 'action',
                             name: 'action'
                         }
@@ -192,9 +214,23 @@
         $('#Search').click(function() {
             var fromdate = $('#fromdate').val();
             var todate = $('#todate').val();
-            console.log(fromdate);
+            var datetype = $('#datatype option:selected').text();
+            var select = $('#SearchContent   option:selected').val();
+            var select0 = $('#SearchContent0 option:selected').val();
+            var select1 = $('#SearchContent1 option:selected').val();
+            var input = $('#SearchInput').val();
+            var input0 = $('#SearchInput0').val();
+            var input1 = $('#SearchInput1').val();
+            console.log(select);
+
+            console.log(input);
+
             $('#table').DataTable().destroy();
-            loaddata(from_date = fromdate, to_date = todate);
+            loaddata(from_date = fromdate, to_date = todate, date_type = datetype, search_select =
+                select,
+                search_select0 = select0, search_select1 = select1, search_input = input,
+                search_input0 = input0,
+                search_input1 = input1);
         })
 
         $('#Refresh').click(function() {
@@ -204,28 +240,55 @@
             loaddata(from_date = " ", to_date = " ");
         })
 
-        var FormDanhMuc =
-            '<br><div class="" id="searchForm" style="padding-top: 40px;size:20ch"><label style="float: left; padding-right:20px" for="topthem">Danh mục tìm</label><div style="width:200px;float: left; padding-right:20px"><select class="form-control" id="SearchContent' +
-            count +
-            '"><option disabled selected value>-- Cột cần tìm -- </option><option value="TenDVVC">TÊN ĐƠN VỊ VẬN CHYỂN</option><option value="TenVietTat">TÊN VIẾT TẮT</option><option value="DiaChi">ĐỊA CHỈ</option><option value="SDT">SỐ ĐIỆN THOẠI </option><option value="GhiChu">GHI CHÚ</option></select></div>'
+        function DanhMuc(idNumber) {
+            var FormDanhMuc =
+                '<div class="searchForm' + idNumber +
+                '" id="searchForm' + idNumber +
+                '" style="padding-top: 40px;size:20ch"><label style="float: left; padding-right:20px" for="topthem">Danh mục tìm</label><div style="width:200px;float: left; padding-right:20px"><select class="form-control" id="SearchContent' +
+                idNumber +
+                '"><option disabled selected value>-- Cột cần tìm -- </option><option value="TenDVVC">TÊN ĐƠN VỊ VẬN CHYỂN</option><option value="TenVietTat">TÊN VIẾT TẮT</option><option value="DiaChi">ĐỊA CHỈ</option><option value="SDT">SỐ ĐIỆN THOẠI </option><option value="GhiChu">GHI CHÚ</option></select></div>'
+            return FormDanhMuc;
+        }
+
+        function NoiDung(idNumber) {
+            var FormNoiDung =
+                '<label for="" style="float:left; padding-right:20px">Nội dung tìm</label><div class="col-md-4" style="width: 200px"><input id="SearchInput' +
+                idNumber + '" name="SearchInput' + idNumber +
+                '" class="form-control" type="text" placeholder="-- Nội dung tìm --"></div><div><button  onclick="Delete' +
+                idNumber + '()"  id="Delete' +
+                idNumber + '" class="btn btn-danger">X</button></div></div>'
+            return FormNoiDung
+        }
 
         function addAfter(idNumber) {
-            $('#searchForm').after(
-                FormDanhMuc +
-                '<label for="" style="float:left; padding-right:20px">Nội dung tìm</label><div class="col-md-4" style="width: 200px"><input class="form-control" type="text" placeholder="-- Nội dung tìm --"></div><div><a href=""><button class="btn btn-danger">X</button></a></div></div>'
-            )
+            $('#searchform').after(
+                DanhMuc(idNumber) +
+                NoiDung(idNumber))
         };
         $('#AddSearch').click(function() {
-
-            console.log(FormDanhMuc);
             if (count < 2) {
-
-                addAfter();
+                addAfter(count);
                 selectizeA();
                 count++;
             }
-
         })
+
+
+
+        function Delete() {
+            count--;
+            $('#searchForm').remove();
+        }
+
+        function Delete0() {
+            count--;
+            $('#searchForm0').remove();
+        }
+
+        function Delete1() {
+            count--;
+            $('#searchForm1').remove();
+        }
     </script>
 
 
