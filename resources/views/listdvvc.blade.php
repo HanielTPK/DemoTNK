@@ -110,27 +110,29 @@
 
         $("#todate").val(window.localStorage.getItem('DateTo'));
 
-        $("#SearchInput0").val(window.localStorage.getItem('SearchInput0'));
+        $(document).ready(function() {
+            $("#SearchInput0").val(window.localStorage.getItem('SearchInput0'));
 
-        $("#SearchInput1").val(window.localStorage.getItem('SearchInput1'));
+            $("#SearchInput1").val(window.localStorage.getItem('SearchInput1'));
 
-        $("#SearchInput2").val(window.localStorage.getItem('SearchInput2'));
+            $("#SearchInput2").val(window.localStorage.getItem('SearchInput2'));
 
-        if (window.localStorage.getItem('DateType') != null) {
-            $("#datatype").val(window.localStorage.getItem('DateType')).change();
-        }
+            if (window.localStorage.getItem('DateType') != null) {
+                $("#datatype").val(window.localStorage.getItem('DateType')).change();
+            }
 
-        if (window.localStorage.getItem('SearchContent0') != null) {
-            $("#SearchContent0").val(window.localStorage.getItem('SearchContent0')).change();
-        }
+            if (window.localStorage.getItem('SearchContent0') != null) {
+                $("#SearchContent0").val(window.localStorage.getItem('SearchContent0')).change();
+            }
 
-        if (window.localStorage.getItem('SearchContent1') != null) {
-            $("#SearchContent1").val(window.localStorage.getItem('SearchContent1')).change();
-        }
+            if (window.localStorage.getItem('SearchContent1') != null) {
+                $("#SearchContent1").val(window.localStorage.getItem('SearchContent1')).change();
+            }
 
-        if (window.localStorage.getItem('SearchContent2') != null) {
-            $("#SearchContent2").val(window.localStorage.getItem('SearchContent2')).change();
-        }
+            if (window.localStorage.getItem('SearchContent2') != null) {
+                $("#SearchContent2").val(window.localStorage.getItem('SearchContent2')).change();
+            }
+        })
 
 
 

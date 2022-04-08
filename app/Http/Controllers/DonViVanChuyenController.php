@@ -38,18 +38,17 @@ class DonViVanChuyenController extends Controller
             'sdt.max' => 'Số điện phải có ít nhất 10 chữ số ',
             'masothue.numeric' => 'Mã số thuế phải là số',
         ]);
+        $username = $req->old('dvvc');
 
-     
         foreach ($alldvvc as $var) {
             if ($var->TenDVVC == $req->tendvvc && $var->deleted_at != null) {
-                return redirect()->back()->with('message','Tên ĐVVC này đã tồn tại hoặc đã bị xóa');
+                return redirect()->back()->withInput()->with('message', 'Tên ĐVVC này đã tồn tại hoặc đã bị xóa');
             } else if ($var->TenDVVC == $req->tendvvc && $var->deleted_at == null) {
-                return redirect()->back()->with('message','Tên ĐVVC này đã tồn tại');
+                return redirect()->back()->withInput()->with('message', 'Tên ĐVVC này đã tồn tại');
             } else if ($var->TenVietTat == $req->tenviettat && $var->deleted_at == null) {
-                return redirect()->back()->with('message','Tên viết tắt này đã tồn tại');
+                return redirect()->back()->withInput()->with('message', 'Tên viết tắt này đã tồn tại');
             }
         }
-
         $dvvc = new DonViVanChuyen;
         $dvvc->TenDVVC = $req->tendvvc;
         $dvvc->TenVietTat = $req->tenviettat;
@@ -187,21 +186,27 @@ class DonViVanChuyenController extends Controller
         $user = Auth::user();
 
         $messerror = $req->validate([
-            'tendvvc' => 'required',
+
             'tenviettat' => 'required',
+            'tendvvc' => 'required',
+            'sdt' => 'nullable|numeric|min:10',
+            'masothue' => 'nullable|numeric'
         ], [
-            'tendvvc.required' => 'Tên DVVC không được bỏ trống',
-            'tenviettat.required' => 'Tên viết tắt không được bỏ trống'
+            'tendvvc.required' => 'Tên ĐVVC không được bỏ trống',
+            'tenviettat.required' => 'Tên viết tắt không được bỏ trống',
+            'sdt.numeric' => 'Số điện thoại phải là số',
+            'sdt.max' => 'Số điện phải có ít nhất 10 chữ số ',
+            'masothue.numeric' => 'Mã số thuế phải là số',
         ]);
 
+
         foreach ($alldvvc as $var) {
-           
             if ($var->TenDVVC == $req->tendvvc && $var->deleted_at != null) {
-                return redirect()->back()->withErrors('Tên ĐVVC này đã tồn tại hoặc đã bị xóa');
-            } else if ($var->TenDVVC == $req->tendvvc && $var->deleted_at == null && $var->id != $req->id) {
-                return redirect()->back()->withErrors('Tên ĐVVC này đã tồn tại');
-            } else if ($var->TenVietTat == $req->tenviettat && $var->deleted_at == null && $var->id != $req->id) {
-                return redirect()->back()->withErrors('Tên viết tắt này đã tồn tại');
+                return redirect()->back()->withInput()->with('message', 'Tên ĐVVC này đã tồn tại hoặc đã bị xóa');
+            } else if ($var->TenDVVC == $req->tendvvc && $var->deleted_at == null) {
+                return redirect()->back()->withInput()->with('message', 'Tên ĐVVC này đã tồn tại');
+            } else if ($var->TenVietTat == $req->tenviettat && $var->deleted_at == null) {
+                return redirect()->back()->withInput()->with('message', 'Tên viết tắt này đã tồn tại');
             }
         }
         if (empty(DonViVanChuyen::find($req->id))) {
