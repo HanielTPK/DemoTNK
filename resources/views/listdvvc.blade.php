@@ -26,58 +26,39 @@
         <div style="height: 50%">
             <a href="{{ url()->previous() }}"><i class="fa fa-backward" aria-hidden="true"> Quay lại</i></a><br>
             <div style="float: right">
-
-                <button type="submit" class='btn btn-success' style="float: right; margin: 5px" id="Search">Tìm
+                <button type="button" class='btn btn-success' style="float: right; margin: 5px" id="Refresh">Tất cả</button>
+                <button type="button" class='btn btn-success' style="float: right; margin: 5px" id="Search">Tìm
                     kiếm</button>
 
-                <button type="submit" class='btn btn-success' style="float: right; margin: 5px" id="Refresh">Tất cả</button>
 
-                <button type="submit" class='btn btn-success' style="float: right;  margin: 5px" id="AddSearch">+</button>
+
+                <button type="button" class='btn btn-success' style="float: right;  margin: 5px" id="AddSearch">+</button>
 
             </div>
+
             <div style="width: 60%; margin:10px">
                 <div style="float: right">
                     <span>Đến ngày</span>
 
-                    <input class="form-control" style=" " type="date" id="todate"><br>
+                    <input onchange="onChangeDateTo()" value="" class="form-control" style=" " type="date" id="todate"><br>
                 </div>
                 <div style="float: right; ">
                     <span>Từ ngày</span>
 
-                    <input class="form-control" style="" type="date" id="fromdate">
+                    <input onchange="onChangeDateFrom()" class="form-control" style="" type="date" id="fromdate">
                 </div>
 
             </div>
-            <div class="date-search">
-                <select name="datatype" id="datatype" class="form-control" style="width: 20%">
+            <div class="date-search" id="date-search" style="padding-left:20px">
+                <select onchange="onChangeDateType()" name="datatype" id="datatype" class="form-control"
+                    style="width: 20%">
                     <option value="Ngày tạo">Ngày tạo</option>
                     <option value="Ngày sửa">Ngày sửa</option>
                 </select>
             </div>
-            <div class="" id="searchform" style="padding-top: 40px;size:20ch">
-                <label style="float: left; padding-right:20px" for="topthem">Danh mục tìm</label>
-                <div style="width:200px;float: left; padding-right:20px">
-                    <select class="form-control" name="SearchContent" id="SearchContent">
-                        <option disabled selected value> -- Cột cần tìm -- </option>
-                        <option value="TenDVVC">TÊN ĐƠN VỊ VẬN CHYỂN</option>
-                        <option value="TenVietTat">TÊN VIẾT TẮT</option>
-                        <option value="DiaChi">ĐỊA CHỈ</option>
-                        <option value="Sdt">SỐ ĐIỆN THOẠI </option>
-                        <option value="GhiChu">GHI CHÚ</option>
-                    </select>
-                </div>
-                <label for="" style="float:left; padding-right:20px">Nội dung tìm</label>
 
-                <div class="col-md-4" style="width: 200px">
-                    <input id="SearchInput" name="SearchInput" class="form-control" type="text"
-                        placeholder="-- Nội dung tìm --">
-                </div>
-                <div style="">
-                    <button onclick="return $('#searchForm').remove();" id="Delete" class="btn btn-danger">X</button>
-                </div>
-            </div>
         </div>
-        <div class="" style="padding-bottom:40px; width:200px;">
+        <div class="" style="padding-top:20px;padding-bottom:40px;padding-left:20px; width:200px;">
             <a href="{{ route('themdvvcG') }}"> <button type="submit" class='btn btn-success'
                     style="float:left; padding-top:10px" id="Refresh">+ Thêm mới</button></a>
         </div>
@@ -93,12 +74,14 @@
                             TÊN ĐẦY ĐỦ/<br>TÊN TK NGÂN HÀNG
                         </th>
                         <th scope="col">
-                            TÊN VIẾT TẮT/<br>SỐ TK MH/<br>TK ĐĂNG NHẬP
+                            TÊN VIẾT TẮT/<br>SỐ TK NH/<br>TK ĐĂNG NHẬP
+                        </th>
+                        <th>
+                            SỐ ĐIỆN THOẠI/<BR> MỞ TẠI NGÂN HÀNG/<br> NGƯỜI DÙNG TK ĐĂNG NHẬP
                         </th>
                         <th scope="col">
                             MÃ SỐ THUẾ/<br>SDT NGƯỜI DÙNG TK
                         </th>
-
                         <th scope="col">
                             QUYỀN TK DN
                         </th>
@@ -120,12 +103,47 @@
 
     <script>
         var count = 0
+        var countStorage = 0;
         loaddata();
+        // Load History Fillter
+        $("#fromdate").val(window.localStorage.getItem('DateFrom'));
+
+        $("#todate").val(window.localStorage.getItem('DateTo'));
+
+        $("#SearchInput0").val(window.localStorage.getItem('SearchInput0'));
+
+        $("#SearchInput1").val(window.localStorage.getItem('SearchInput1'));
+
+        $("#SearchInput2").val(window.localStorage.getItem('SearchInput2'));
+
+        if (window.localStorage.getItem('DateType') != null) {
+            $("#datatype").val(window.localStorage.getItem('DateType')).change();
+        }
+
+        if (window.localStorage.getItem('SearchContent0') != null) {
+            $("#SearchContent0").val(window.localStorage.getItem('SearchContent0')).change();
+        }
+
+        if (window.localStorage.getItem('SearchContent1') != null) {
+            $("#SearchContent1").val(window.localStorage.getItem('SearchContent1')).change();
+        }
+
+        if (window.localStorage.getItem('SearchContent2') != null) {
+            $("#SearchContent2").val(window.localStorage.getItem('SearchContent2')).change();
+        }
+
+
+
+        //Selecize
         $('#SearchContent').selectize({
             sortField: 'text'
         });
 
 
+
+
+
+        //Add Selectize
         function selectizeA() {
             $(document).ready(function() {
                 $('#SearchContent').selectize({
@@ -145,7 +163,7 @@
 
 
         }
-
+        //Load DataTable
         function loaddata(from_date = ' ', to_date = ' ', date_type = ' ', search_select = ' ', search_select0 =
             ' ',
             search_select1 = ' ', search_input = ' ', search_input0 = ' ', search_input1 = ' ') {
@@ -187,6 +205,10 @@
                             name: 'tenviettat'
                         },
                         {
+                            data: 'Sdt',
+                            name: 'sdt'
+                        },
+                        {
                             data: 'MaSoThue',
                             name: 'masothue'
                         },
@@ -211,14 +233,15 @@
                 $('#table').DataTable().ajax.reload();
             })
         }
+        //Fill Data
         $('#Search').click(function() {
             var fromdate = $('#fromdate').val();
             var todate = $('#todate').val();
             var datetype = $('#datatype option:selected').text();
-            var select = $('#SearchContent   option:selected').val();
+            var select = $('#SearchContent2   option:selected').val();
             var select0 = $('#SearchContent0 option:selected').val();
             var select1 = $('#SearchContent1 option:selected').val();
-            var input = $('#SearchInput').val();
+            var input = $('#SearchInput2').val();
             var input0 = $('#SearchInput0').val();
             var input1 = $('#SearchInput1').val();
             console.log(select);
@@ -232,19 +255,19 @@
                 search_input0 = input0,
                 search_input1 = input1);
         })
-
+        //Refresh data
         $('#Refresh').click(function() {
+            location.reload();
 
-            console.log(fromdate);
-            $('#table').DataTable().destroy();
-            loaddata(from_date = " ", to_date = " ");
+            window.localStorage.clear()
         })
 
         function DanhMuc(idNumber) {
             var FormDanhMuc =
                 '<div class="searchForm' + idNumber +
                 '" id="searchForm' + idNumber +
-                '" style="padding-top: 40px;size:20ch"><label style="float: left; padding-right:20px" for="topthem">Danh mục tìm</label><div style="width:200px;float: left; padding-right:20px"><select class="form-control" id="SearchContent' +
+                '" style="padding-top: 40px;size:20ch"><label style="float: left; padding-right:20px" for="topthem">Danh mục tìm</label><div style="width:200px;float: left; padding-right:20px"><select class="form-control" onchange="onChange' +
+                idNumber + '()" id="SearchContent' +
                 idNumber +
                 '"><option disabled selected value>-- Cột cần tìm -- </option><option value="TenDVVC">TÊN ĐƠN VỊ VẬN CHYỂN</option><option value="TenVietTat">TÊN VIẾT TẮT</option><option value="DiaChi">ĐỊA CHỈ</option><option value="SDT">SỐ ĐIỆN THOẠI </option><option value="GhiChu">GHI CHÚ</option></select></div>'
             return FormDanhMuc;
@@ -252,7 +275,8 @@
 
         function NoiDung(idNumber) {
             var FormNoiDung =
-                '<label for="" style="float:left; padding-right:20px">Nội dung tìm</label><div class="col-md-4" style="width: 200px"><input id="SearchInput' +
+                '<label for="" style="float:left; padding-right:20px">Nội dung tìm</label><div class="col-md-4" style="width: 200px"><input onchange="onChangeInput' +
+                idNumber + '()"  id="SearchInput' +
                 idNumber + '" name="SearchInput' + idNumber +
                 '" class="form-control" type="text" placeholder="-- Nội dung tìm --"></div><div><button  onclick="Delete' +
                 idNumber + '()"  id="Delete' +
@@ -261,33 +285,132 @@
         }
 
         function addAfter(idNumber) {
-            $('#searchform').after(
+            $('#date-search').after(
                 DanhMuc(idNumber) +
                 NoiDung(idNumber))
         };
+
+        //Add fillter bar click event
         $('#AddSearch').click(function() {
-            if (count < 2) {
+            console.log($('#SearchInput2').val());
+            var arrCheck = [0, 1, 2];
+            if (count < 3) {
+                console.log($("#SearchContent" + count).length);
+                if ($("#SearchContent" + count).length == 0) {
+                    addAfter(count);
+                    selectizeA();
+                    count++;
+                } else {
+                    arrCheck.forEach(element => {
+                        if ($("#SearchContent" + element).length == 0) {
+                            addAfter(element);
+                            selectizeA();
+                            count++;
+                            return;
+                        }
+                    });
+                }
+
+            }
+            window.localStorage.setItem('FillterCount', count);
+        })
+
+        //Add 1 Fillter bar
+        function addFillterBar() {
+            for (var i = 0; count < 3; count++) {}
+            if (count < 3) {
                 addAfter(count);
                 selectizeA();
                 count++;
             }
-        })
+        }
 
+        console.log(parseInt(window.localStorage.getItem('FillterCount')));
+        for (let index = 0; index < parseInt(window.localStorage.getItem('FillterCount')); index++) {
+            if (index <= 3) {
+                addAfter(index);
+                selectizeA();
+                count++;
+            }
 
-
-        function Delete() {
-            count--;
-            $('#searchForm').remove();
         }
 
         function Delete0() {
             count--;
             $('#searchForm0').remove();
+            window.localStorage.setItem('FillterCount', count);
         }
 
         function Delete1() {
             count--;
             $('#searchForm1').remove();
+            window.localStorage.setItem('FillterCount', count);
+        }
+
+        function Delete2() {
+            count--;
+            $('#searchForm2').remove();
+            window.localStorage.setItem('FillterCount', count);
+        }
+        //Onchange fillterbar event
+        function onChangeDateType() {
+
+            window.localStorage.setItem('DateType', $('#date-search option:selected').text());
+
+        }
+
+        function onChangeDateFrom() {
+
+            window.localStorage.setItem('DateFrom', $('#fromdate').val());
+
+        }
+
+        function onChangeDateTo() {
+
+            window.localStorage.setItem('DateTo', $('#todate ').val());
+
+        }
+
+        function onChange0() {
+
+            window.localStorage.setItem('SearchContent0', $('#SearchContent0 option:selected').val());
+
+        }
+
+        function onChange0() {
+
+            window.localStorage.setItem('SearchContent0', $('#SearchContent0 option:selected').val());
+
+        }
+
+        function onChange1() {
+
+            window.localStorage.setItem('SearchContent1', $('#SearchContent1 option:selected').val());
+
+        }
+
+        function onChange2() {
+
+            window.localStorage.setItem('SearchContent2', $('#SearchContent2 option:selected').val());
+
+        }
+
+        function onChangeInput0() {
+
+            window.localStorage.setItem('SearchInput0', $('#SearchInput0').val());
+
+        }
+
+        function onChangeInput1() {
+
+            window.localStorage.setItem('SearchInput1', $('#SearchInput1').val());
+
+        }
+
+        function onChangeInput2() {
+
+            window.localStorage.setItem('SearchInput2', $('#SearchInput2').val());
+
         }
     </script>
 

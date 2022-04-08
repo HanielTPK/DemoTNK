@@ -11,4 +11,9 @@ class DonViVanChuyen extends Model
     protected $table='donvivanchuyen';
     protected $fillable=['TenDVVC','TenVietTat','Sdt','MaSoThue','TrangThaiDVVC','NgayNgungHopTac','TenTaiKhoanNganHang','SoTaiKhoan','NganHangMoTaiKhoan','DiaChi','ThongTinLienHe','GhiChu'];
     use SoftDeletes;
+
+    public function followUserId()
+    {
+       return $this->belongsTo('App\User','userid','id');
+    }
 }

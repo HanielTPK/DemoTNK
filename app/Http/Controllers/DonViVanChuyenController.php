@@ -29,24 +29,27 @@ class DonViVanChuyenController extends Controller
 
             'tenviettat' => 'required',
             'tendvvc' => 'required',
+            'sdt' => 'nullable|numeric|min:10',
+            'masothue' => 'nullable|numeric'
         ], [
-            'tendvvc.required' => 'Tên DVVC không được bỏ trống',
-
-            'tenviettat.required' => 'Tên viết tắt không được bỏ trống'
+            'tendvvc.required' => 'Tên ĐVVC không được bỏ trống',
+            'tenviettat.required' => 'Tên viết tắt không được bỏ trống',
+            'sdt.numeric' => 'Số điện thoại phải là số',
+            'sdt.max' => 'Số điện phải có ít nhất 10 chữ số ',
+            'masothue.numeric' => 'Mã số thuế phải là số',
         ]);
 
-        if ($req->tendvvc == $req->tenviettat) {
-            return redirect()->back()->withErrors('Tên DVVC không được trùng với tên viết tắt');
-        }
+     
         foreach ($alldvvc as $var) {
-            if($var->TenDVVC == $req->tendvvc&& $var->deleted_at!=null){
-                return redirect()->back()->withErrors('Tên dvvc này đã tồn tại hoặc đã bị xóa');
-            }
-            else if ($var->TenDVVC == $req->tendvvc&& $var->deleted_at==null) {
-                return redirect()->back()->withErrors('Tên dvvc này đã tồn tại');
+            if ($var->TenDVVC == $req->tendvvc && $var->deleted_at != null) {
+                return redirect()->back()->with('message','Tên ĐVVC này đã tồn tại hoặc đã bị xóa');
+            } else if ($var->TenDVVC == $req->tendvvc && $var->deleted_at == null) {
+                return redirect()->back()->with('message','Tên ĐVVC này đã tồn tại');
+            } else if ($var->TenVietTat == $req->tenviettat && $var->deleted_at == null) {
+                return redirect()->back()->with('message','Tên viết tắt này đã tồn tại');
             }
         }
-        
+
         $dvvc = new DonViVanChuyen;
         $dvvc->TenDVVC = $req->tendvvc;
         $dvvc->TenVietTat = $req->tenviettat;
@@ -65,14 +68,17 @@ class DonViVanChuyenController extends Controller
         $dvvc->userupdateid = null;
         $dvvc->save();
         session()->flash('success', 'Thêm thành công');
-        return redirect()->back();
+        return redirect()->refresh();
     }
     //Lấy đơn vị vận chuyển
     public function getalldvvc(Request $req)
     {
+        $date = new Carbon($req->todate);
+        $date->addDay();
+        $req->todate = $date;
 
         if (true) {
-            if ($req->searchselect != null || $req->searchselect != null || $req->searchselect != null) {
+            if ($req->searchselect != null || $req->searchselect0 != null || $req->searchselect1 != null) {
                 $query = $req->searchinput != null ? [$req->searchselect, 'LIKE', '%' . $req->searchinput . '%'] : ['deleted_at',  null];
                 $query1 = $req->searchselect0 != null ? [$req->searchselect0, 'LIKE', '%' . $req->searchinput0 . '%'] : ['deleted_at', null];
                 $query2 = $req->searchselect1 != null ? [$req->searchselect1, 'LIKE', '%' . $req->searchinput1 . '%'] : ['deleted_at', null];
@@ -116,7 +122,7 @@ class DonViVanChuyenController extends Controller
             }
 
             return Datatables::of($alldvvc)->editColumn('TenDVVC', function ($alldvvc) {
-                $tentknh = $alldvvc->TenTaiKHoanNganHang == null ? $alldvvc->TenTaiKHoanNganHang : "<span style='color:red;text-align:center'>X</span>";;
+                $tentknh = $alldvvc->TenTaiKHoanNganHang != null ? $alldvvc->TenTaiKHoanNganHang : "<span style='color:red;text-align:center'>X</span>";;
                 $masothue = $alldvvc->MaSoThue == null ? $alldvvc->MaSoThue : "<span style='color:red;text-align:center'>X</span>";
 
                 $diachi = $alldvvc->DiaChi == null ? $alldvvc->TenTaiKHoanNganHang : " ";
@@ -126,10 +132,18 @@ class DonViVanChuyenController extends Controller
                 $ghichu = $alldvvc->GhiChu == null ? $alldvvc->GhiChu : " ";
                 return $alldvvc->TenDVVC . '<br>' . $tentknh;
             })->editColumn('TenVietTat', function ($alldvvc) {
+                $userlog = Auth::user();
                 $sotknh = $alldvvc->SoTaiKhoan != null ? $alldvvc->SoTaiKhoan : '<span style="color:red;text-align:center">X</span>';
-                return $alldvvc->TenVietTat . '<br>' . $sotknh;
+                return $alldvvc->TenVietTat . '<br>' . $sotknh . "<br>" . $userlog['name'];
+            })->editColumn('Sdt', function ($alldvvc) {
+                $userlog = Auth::user();
+                $sdt = $alldvvc->Sdt != null ? $alldvvc->Sdt : "<span style='color:red;text-align:center'>X</span>";
+                $motainganhang = $alldvvc->NganHangMoTaiKhoan != null ? $alldvvc->NganHangMoTaiKhoan : "<span style='color:red;text-align:center'>X</span>";
+                $user = User::select('name')->find($alldvvc->userid);
+                return $sdt . '<br>' . $motainganhang . '<br>' . $userlog['email'];
             })->editColumn('DiaChi', function ($alldvvc) {
-                return $alldvvc->DiaChi . '<br>' . $alldvvc->ThongTinLienHe . '<br>' . $alldvvc->GhiChu;
+                $ttlienhe = $alldvvc->ThongTinLienHe != null ? $alldvvc->ThongTinLienHe : '<span style="color:red;text-align:center">X</span>';
+                return $alldvvc->DiaChi . '<br>' . $ttlienhe . '<br>' . $alldvvc->GhiChu;
             })->editColumn('TrangThaiDVVC', function ($alldvvc) {
 
                 $user = User::select('name')->find($alldvvc->userid);
@@ -138,15 +152,15 @@ class DonViVanChuyenController extends Controller
                 $dateUpdate = $alldvvc->updated_at == null ? " " : $alldvvc->updated_at->format('d-m-y');
                 return $alldvvc->TrangThaiDVVC . '<br>' . $user['name'] . "/" . $dateCreate . "<br>" . $userUpdate['name'] . "/." . $dateUpdate;
             })->editColumn('MaSoThue', function ($alldvvc) {
-                $sdt = $alldvvc->Sdt == null ? $alldvvc->Sdt : "<span style='color:red;text-align:center'>X</span>";
-                $motainganhang = $alldvvc->NganHangMoTaiKhoan == null ? $alldvvc->NganHangMoTaiKhoan : "<span style='color:red;text-align:center'>X</span>";
-                $user = User::select('name')->find($alldvvc->userid);
-                return $alldvvc->MaSoThue;
+
+                return $alldvvc->MaSoThue . '<br><span style="color:red;text-align:center">X</span>';
+            })->editColumn('NgayNgungHopTac', function ($alldvvc) {
+                return "<span style='color:red;text-align:center'>X</span>";
             })
                 ->addColumn('action', function ($alldvvc) {
                     return     ' <a href=' . route('updatedvvcG', ['id' => $alldvvc->id]) . ' <i class="fa fa-pencil-square-o" aria-hidden="true"></i></a> <a  onclick="return confirm(' . "'Bạn có chắc muốn xóa'" . ')" href=' . route('deletedvvcP', ['id' => $alldvvc->id]) . ' <i class="fa fa-trash-o" aria-hidden="true"></i></a>';
                 })
-                ->rawColumns(['action', 'checkbox', 'TenDVVC', 'TenVietTat', 'DiaChi', 'TrangThaiDVVC'])->make(true);
+                ->rawColumns(['NgayNgungHopTac', 'MaSoThue', 'action', 'checkbox', 'TenDVVC', 'TenVietTat', 'DiaChi', 'TrangThaiDVVC', 'Sdt'])->make(true);
         }
         return redirect()->back();
     }
@@ -169,14 +183,31 @@ class DonViVanChuyenController extends Controller
 
     public function updatedvvc(Request $req)
     {
+        $alldvvc = DonViVanChuyen::all();
         $user = Auth::user();
-        $messerror = $req->validate([       
-           'tendvvc' => 'required',
+
+        $messerror = $req->validate([
+            'tendvvc' => 'required',
             'tenviettat' => 'required',
         ], [
             'tendvvc.required' => 'Tên DVVC không được bỏ trống',
             'tenviettat.required' => 'Tên viết tắt không được bỏ trống'
         ]);
+
+        foreach ($alldvvc as $var) {
+           
+            if ($var->TenDVVC == $req->tendvvc && $var->deleted_at != null) {
+                return redirect()->back()->withErrors('Tên ĐVVC này đã tồn tại hoặc đã bị xóa');
+            } else if ($var->TenDVVC == $req->tendvvc && $var->deleted_at == null && $var->id != $req->id) {
+                return redirect()->back()->withErrors('Tên ĐVVC này đã tồn tại');
+            } else if ($var->TenVietTat == $req->tenviettat && $var->deleted_at == null && $var->id != $req->id) {
+                return redirect()->back()->withErrors('Tên viết tắt này đã tồn tại');
+            }
+        }
+        if (empty(DonViVanChuyen::find($req->id))) {
+            session()->flash('fail', 'Sửa thành công');
+            return redirect()->route('listdvvc');
+        }
         $dvvc = DonViVanChuyen::find($req->id);
 
         $dvvc->TenDVVC = $req->tendvvc;
@@ -193,9 +224,10 @@ class DonViVanChuyenController extends Controller
         $dvvc->GhiChu = $req->ghichu;
         $dvvc->userupdateid = $user->id;
         $dvvc->save();
-        session()->flash('fail', 'Sửa thành công');
-        return redirect()->route('listdvvc');
+        session()->flash('success', 'Sửa thành công');
+        return redirect()->back();
     }
     // Search  Date
+    //Back page
 
 }
