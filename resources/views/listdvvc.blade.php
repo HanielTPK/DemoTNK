@@ -326,7 +326,7 @@
                 count++;
             }
         }
-
+        // Add fillter bar from localstorage
         console.log(parseInt(window.localStorage.getItem('FillterCount')));
         for (let index = 0; index < parseInt(window.localStorage.getItem('FillterCount')); index++) {
             if (index <= 3) {
