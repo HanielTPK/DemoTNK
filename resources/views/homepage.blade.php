@@ -1,15 +1,6 @@
 @extends('indexEX')
 @section('maincontent')
-    @if (!empty(session('message')))
-        <div class="alert alert-danger">
-            <ul>
-                <li>{{ session('message') }} <button type="button" class="close" data-dismiss="alert"
-                        aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button></li>
-            </ul>
-        </div>
-    @endif
+
 
     @if (session()->has('success'))
         <div class="alert alert-success" role="alert">
@@ -63,22 +54,23 @@
             <form action="{{ route('themdvvcP') }}" method="POST">
         @endif
         @if ($mode == 1)
-            <form action="{{ route('updatedvvcP', ['id' => $id]) }}" method="POST">
+            <form id="editForm" action="" method="POST">
         @endif
         @csrf
         <div>
             <h3>Thông tin ĐVVC</h3>
             <div class="topthem">
                 <label for="">Tên ĐVVC (*)</label>
-                <input value="{{ $tendvvc }}" name="tendvvc" type="text" class="form-control"
+                <input value="{{ $tendvvc }}" name="tendvvc" type="text" class="form-control" id="tendvvc"
                     placeholder="Nhập tên đvvc">
+
                 @if ($errors->has('tendvvc'))
                     <span class="text-danger">{{ $errors->first('tendvvc') }}</span>
                 @endif
             </div>
             <div class="topthem">
                 <label for="">Tên viêt tắt (*)</label>
-                <input value="{{ $tenviettat }}" name="tenviettat" type="text" class="form-control" id=""
+                <input value="{{ $tenviettat }}" name="tenviettat" type="text" class="form-control" id="tenviettat"
                     placeholder="Nhập viết tắt">
                 @if ($errors->has('tenviettat'))
                     <span class="text-danger">{{ $errors->first('tenviettat') }}</span>
@@ -87,7 +79,7 @@
 
             <div class="topthem">
                 <label for="">Số điện thoại</label>
-                <input value="{{ $sdt }}" name="sdt" type="text" class="form-control" id=""
+                <input value="{{ $sdt }}" name="sdt" type="text" class="form-control" id="sdt"
                     placeholder="Nhập SDT">
                 @if ($errors->has('sdt'))
                     <span class="text-danger">{{ $errors->first('sdt') }}</span>
@@ -96,7 +88,7 @@
 
             <div class="topthem">
                 <label for="">Mã số thuế</label>
-                <input value="{{ $mst }}" name="masothue" type="text" class="form-control" id=""
+                <input value="{{ $mst }}" name="masothue" type="text" class="form-control" id="mst"
                     placeholder="Nhập MST">
                 @if ($errors->has('masothue'))
                     <span class="text-danger">{{ $errors->first('masothue') }}</span>
@@ -131,48 +123,48 @@
             <div class="mid">
                 <div class="topmid">
                     <label for="">Tên TK ngân hàng</label>
-                    <input value="{{ $tentknh }}" name="tentknganhang" type="text" class="form-control" id=""
-                        placeholder="Nhập tên TK ngân hàng">
+                    <input value="{{ $tentknh }}" name="tentknganhang" type="text" class="form-control"
+                        id="tentknganhang" placeholder="Nhập tên TK ngân hàng">
 
                 </div>
 
                 <div class="topmid">
                     <label for="">Số tài khoản</label>
-                    <input value="{{ $stk }}" name="sotaikhoan" type="text" class="form-control" id=""
+                    <input value="{{ $stk }}" name="sotaikhoan" type="text" class="form-control" id="sotaikhoan"
                         placeholder="Nhập số tài khoản">
 
                 </div>
 
                 <div class="topmid">
                     <label for="">Mở tại ngân hàng</label>
-                    <input value="{{ $tennh }}" name="tennganhang" type="text" class="form-control" id=""
-                        placeholder="Nhập nơi mở tài khoản">
+                    <input value="{{ $tennh }}" name="tennganhang" type="text" class="form-control"
+                        id="tennganhang" placeholder="Nhập nơi mở tài khoản">
                 </div>
 
             </div>
             <div class="topmid">
                 <label for="">Địa chỉ</label>
-                <textarea name="diachi" type="text" class="form-control" id=""
+                <textarea name="diachi" type="text" class="form-control" id="diachi"
                     placeholder="Nhập địa chỉ">{{ $diachi }}</textarea>
 
             </div>
 
             <div class="topmid">
                 <label for="">Thông tin liên hệ</label>
-                <textarea name="ttlh" type="text" class="form-control" id=""
+                <textarea name="ttlh" type="text" class="form-control" id="ttlh"
                     placeholder="Nhập thông tin liên hệ">{{ $ttlh }}</textarea>
 
             </div>
 
             <div class="topmid">
                 <label for="">Ghi chú</label>
-                <textarea name="ghichu" type="text" class="form-control" id=""
+                <textarea name="ghichu" type="text" class="form-control" id="ghichu"
                     placeholder="Nhập ghi chú">{{ $ghichu }}</textarea>
 
             </div>
         </div>
         <a href="{{ route('listdvvc') }} "><button type="button" class="btn btn-success">Quay lại</button></a>
-        <button type="submit" class="btn btn-success">Lưu</button>
+        <button type="submit" id="btnSubmit" class="btn btn-success">Lưu</button>
         </form>
     </div>
     <script>
@@ -204,5 +196,59 @@
                 // $('#ngayngunghoptac').val(dateNow);
             }
         }
+        $(document).ready(function() {
+            $("#editForm").submit(function(e) {
+                e.preventDefault();
+                var tendvvc = $("#tendvvc").val();
+                var tenviettat = $("#tenviettat").val();
+                var mst = $("#mst").val();
+                var trangthaidvvc = $("#trangthaidvvc").val();
+                var ngayngunghoptac = $("#ngayngunghoptac").val();
+                var sotaikhoan = $("#sotaikhoan").val();
+                var tennganhang = $("#tennganhang").val();
+                var diachi = $("#diachi").val();
+                var ttlh = $("#ttlh").val();
+                var ghichu = $("#ghichu").val();
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ route('updatedvvcP') }}',
+                    data: {
+                        id: {{ $id }},
+                        tendvvc: tendvvc,
+                        tenviettat: tenviettat,
+                        mst: mst,
+                        trangthaidvvc: trangthaidvvc,
+                        ngayngunghoptac: ngayngunghoptac,
+                        sotaikhoan: sotaikhoan,
+                        tennganhang: tennganhang,
+                        diachi: diachi,
+                        ghichu: ghichu,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        alert('ok');
+                    },
+                    error: function(data) {
+                        // printErrorMsg(data.error);
+                    }
+                });
+            });
+
+        })
+
+        // function printErrorMsg(msg) {
+        //     $(".print-error-msg").find("ul").html('');
+        //     $(".print-error-msg").css('display', 'block');
+        //     $.each(msg, function(key, value) {
+        //         $(".print-error-msg").find("ul").append('<li>' + value + '</li>');
+        //     });
+        // }
+        // });
     </script>
 @endsection

@@ -111,6 +111,9 @@
         $("#todate").val(window.localStorage.getItem('DateTo'));
 
         $(document).ready(function() {
+                
+
+
             $("#SearchInput0").val(window.localStorage.getItem('SearchInput0'));
 
             $("#SearchInput1").val(window.localStorage.getItem('SearchInput1'));
@@ -171,7 +174,6 @@
             search_select1 = ' ', search_input = ' ', search_input0 = ' ', search_input1 = ' ') {
             $(document).ready(function() {
                 $('#table').DataTable({
-
                     info: false,
                     processing: true,
                     serverSide: true,
@@ -380,7 +382,7 @@
         }
 
         function onChange0() {
-
+            
             window.localStorage.setItem('SearchContent0', $('#SearchContent0 option:selected').val());
 
         }

@@ -48,6 +48,8 @@
 
     <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+    {{-- CSRF --}}
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
 </head>
 
@@ -379,7 +381,8 @@
                                 class="fa fa-angle-left pull-right"></i>
                         </a>
                         <ul class="treeview-menu">
-                            <li><a href="{{ route('listdvvc') }}"><i class="fa fa-circle-o"></i> Danh sách đơn vị vận
+                            <li><a href="{{ route('listdvvc') }}"><i class="fa fa-circle-o"></i> Danh sách đơn vị
+                                    vận
                                     chuyển</a></li>
                             <li class="active"><a href="{{ route('themdvvcG') }}"><i
                                         class="fa fa-circle-o"></i>Thêm sản phẩm</a></li>
