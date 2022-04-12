@@ -39,7 +39,7 @@ Route::get('delete', [DonViVanChuyenController::class, 'deletedvvc'])->name('del
 
 Route::get('update', [DonViVanChuyenController::class, 'updateView'])->name('updatedvvcG');
 
-Route::post('update/{id}', [DonViVanChuyenController::class, 'updatedvvc'])->name('updatedvvcP');
+Route::post('update', [DonViVanChuyenController::class, 'updatedvvc'])->name('updatedvvcP');
 
 Route::get('/home', 'HomeController@index')->name('home');
 
