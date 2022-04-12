@@ -168,7 +168,7 @@ class DonViVanChuyenController extends Controller
     public function deletedvvc(Request $req)
     {
         $dvvc = DonViVanChuyen::find($req->id)->delete();
-
+        session()->flash('fail','Xóa thành công');
         return redirect()->back();
     }
     // Edit
@@ -203,9 +203,9 @@ class DonViVanChuyenController extends Controller
         foreach ($alldvvc as $var) {
             if ($var->TenDVVC == $req->tendvvc && $var->deleted_at != null) {
                 return redirect()->back()->withInput()->with('message', 'Tên ĐVVC này đã tồn tại hoặc đã bị xóa');
-            } else if ($var->TenDVVC == $req->tendvvc && $var->deleted_at == null) {
+            } else if ($var->TenDVVC == $req->tendvvc && $var->deleted_at == null&& $var->id!=$req->id) {
                 return redirect()->back()->withInput()->with('message', 'Tên ĐVVC này đã tồn tại');
-            } else if ($var->TenVietTat == $req->tenviettat && $var->deleted_at == null) {
+            } else if ($var->TenVietTat == $req->tenviettat && $var->deleted_at == null&&$var->id!=$req->id) {
                 return redirect()->back()->withInput()->with('message', 'Tên viết tắt này đã tồn tại');
             }
         }

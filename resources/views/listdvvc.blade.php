@@ -24,7 +24,7 @@
     <h1 style="text-align: center; color:rgb(89, 206, 226)">DANH SÁCH ĐƠN VỊ VẬN CHUYỂN</h1>
     <div style="background-color: white;height:100%; border-top-color: red ">
         <div style="height: 50%">
-            <a href="{{ url()->previous() }}"><i class="fa fa-backward" aria-hidden="true"> Quay lại</i></a><br>
+            <a href="{{ route('themdvvcG')}}"><i class="fa fa-backward" aria-hidden="true"> Quay lại</i></a><br>
             <div style="float: right">
                 <button type="button" class='btn btn-success' style="float: right; margin: 5px" id="Refresh">Tất cả</button>
                 <button type="button" class='btn btn-success' style="float: right; margin: 5px" id="Search">Tìm
