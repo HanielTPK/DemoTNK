@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Yajra\Datatables\Datatables;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 
 class DonViVanChuyenController extends Controller
@@ -18,8 +19,9 @@ class DonViVanChuyenController extends Controller
     public function addView()
     {
         $mode = 0;
+        $id = 0;
         $dvvc = "";
-        return view('homepage', compact('mode', 'dvvc'));
+        return view('homepage', compact('id', 'mode', 'dvvc'));
     }
 
     function adddvvc(Request $req)
@@ -27,13 +29,12 @@ class DonViVanChuyenController extends Controller
         $user = Auth::user();
         $alldvvc = DonViVanChuyen::all();
         $messerror = $req->validate([
-
-            'tenviettat' => 'required',
+            'tenviettat' => 'numeric',
             'tendvvc' => 'required',
             'sdt' => 'nullable|numeric|min:10',
             'masothue' => 'nullable|numeric',
-            'tendvvc' => 'unique:donvivanchuyen,TenDVVC',
-            'tenviettat' => 'unique:donvivanchuyen,TenVietTat'
+            'tendvvc' => 'unique:donvivanchuyen,TenDVVC|required',
+            'tenviettat' => 'unique:donvivanchuyen,TenVietTat|required'
         ], [
             'tendvvc.required' => 'Tên ĐVVC không được bỏ trống',
             'tenviettat.required' => 'Tên viết tắt không được bỏ trống',
@@ -195,19 +196,17 @@ class DonViVanChuyenController extends Controller
     // Edit Process
     public function updatedvvc(Request $req)
     {
+
         $alldvvc = DonViVanChuyen::all();
         $user = Auth::user();
         $dvvc = DonViVanChuyen::find($req->id);
-        $validator = $req->validate([
-
-            'tenviettat' => 'required',
-            'tendvvc' => 'required',
-            'sdt' => 'nullable|numeric|min:10',
+        $validator = Validator::make($req->all(), [
+            'sdt' => 'nullable|numeric',
             'masothue' => 'nullable|numeric',
-            'tendvvc' => 'unique:donvivanchuyen,TenDVVC',
-            'tendvvc' => Rule::unique('donvivanchuyen')->ignore($dvvc->id, 'id'),
-            'tenviettat' => 'unique:donvivanchuyen,TenVietTat',
-            'tenviettat' => Rule::unique('donvivanchuyen')->ignore($dvvc->id, 'id'),
+            'tendvvc' => 'unique:donvivanchuyen,TenDVVC|required',
+            'tendvvc' => 'required', Rule::unique('donvivanchuyen')->ignore($dvvc->id, 'id'),
+            'tenviettat' => 'unique:donvivanchuyen,TenVietTat|required',
+            'tenviettat' => 'required', Rule::unique('donvivanchuyen')->ignore($dvvc->id, 'id'),
         ], [
             'tendvvc.required' => 'Tên ĐVVC không được bỏ trống',
             'tenviettat.required' => 'Tên viết tắt không được bỏ trống',
@@ -240,7 +239,7 @@ class DonViVanChuyenController extends Controller
         //     ), 400); // 400 being the HTTP code for an invalid request.
         // }
         if ($validator->fails()) {
-            return response()->json(array('edit_errors' => $validator->getMessageBag()->toArray()));
+            return response()->json($validator->errors(), 400);
         }
         $dvvc = DonViVanChuyen::find($req->id);
         $dvvc->TenDVVC = $req->tendvvc;
@@ -259,6 +258,6 @@ class DonViVanChuyenController extends Controller
         $dvvc->TrangThaiSua = false;
         $dvvc->save();
         session()->flash('success', 'Sửa thành công');
-        return response()->json($validator);
+        return response()->json(200);
     }
 }

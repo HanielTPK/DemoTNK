@@ -63,7 +63,7 @@
                 <label for="">Tên ĐVVC (*)</label>
                 <input value="{{ $tendvvc }}" name="tendvvc" type="text" class="form-control" id="tendvvc"
                     placeholder="Nhập tên đvvc">
-
+                <span class="text-danger tendvvc-error"></span>
                 @if ($errors->has('tendvvc'))
                     <span class="text-danger">{{ $errors->first('tendvvc') }}</span>
                 @endif
@@ -72,6 +72,7 @@
                 <label for="">Tên viêt tắt (*)</label>
                 <input value="{{ $tenviettat }}" name="tenviettat" type="text" class="form-control" id="tenviettat"
                     placeholder="Nhập viết tắt">
+                <span class="text-danger tenviettat-error"></span>
                 @if ($errors->has('tenviettat'))
                     <span class="text-danger">{{ $errors->first('tenviettat') }}</span>
                 @endif
@@ -81,6 +82,7 @@
                 <label for="">Số điện thoại</label>
                 <input value="{{ $sdt }}" name="sdt" type="text" class="form-control" id="sdt"
                     placeholder="Nhập SDT">
+                <span class="text-danger sdt-error"></span>
                 @if ($errors->has('sdt'))
                     <span class="text-danger">{{ $errors->first('sdt') }}</span>
                 @endif
@@ -88,8 +90,9 @@
 
             <div class="topthem">
                 <label for="">Mã số thuế</label>
-                <input value="{{ $mst }}" name="masothue" type="text" class="form-control" id="mst"
+                <input value="{{ $mst }}" name="masothue" type="text" class="form-control" id="masothue"
                     placeholder="Nhập MST">
+                <span class="text-danger masothue-error"></span>
                 @if ($errors->has('masothue'))
                     <span class="text-danger">{{ $errors->first('masothue') }}</span>
                 @endif
@@ -196,12 +199,14 @@
                 // $('#ngayngunghoptac').val(dateNow);
             }
         }
+
         $(document).ready(function() {
             $("#editForm").submit(function(e) {
                 e.preventDefault();
                 var tendvvc = $("#tendvvc").val();
                 var tenviettat = $("#tenviettat").val();
-                var mst = $("#mst").val();
+                var sdt = $('#sdt').val();
+                var masothue = $("#masothue").val();
                 var trangthaidvvc = $("#trangthaidvvc").val();
                 var ngayngunghoptac = $("#ngayngunghoptac").val();
                 var sotaikhoan = $("#sotaikhoan").val();
@@ -215,13 +220,17 @@
                     }
                 });
                 $.ajax({
+                    beforeSend: function() {
+                        $('#editForm').find('span').empty()
+                    },
                     type: 'POST',
                     url: '{{ route('updatedvvcP') }}',
                     data: {
                         id: {{ $id }},
                         tendvvc: tendvvc,
                         tenviettat: tenviettat,
-                        mst: mst,
+                        masothue: masothue,
+                        sdt: sdt,
                         trangthaidvvc: trangthaidvvc,
                         ngayngunghoptac: ngayngunghoptac,
                         sotaikhoan: sotaikhoan,
@@ -232,10 +241,14 @@
                     },
                     dataType: 'json',
                     success: function(data) {
-                        alert('ok');
+                        alert('Sửa thành công');
+
                     },
                     error: function(data) {
-                        // printErrorMsg(data.error);
+                        $.each(data.responseJSON, function(key, val) {
+                            $('#editForm').find('span.' + key + '-error').html(
+                                '<span>' + val + '</span>');
+                        })
                     }
                 });
             });
